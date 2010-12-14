@@ -22,6 +22,17 @@
 
 package org.jboss.ejb3.embedded.impl.base.scanner;
 
+import org.jboss.ejb3.embedded.impl.base.scanner.filter.BundleSymbolicNameExclusionFilter;
+import org.jboss.ejb3.embedded.spi.scanner.filter.ExclusionFilter;
+import org.jboss.logging.Logger;
+import org.jboss.vfs.TempFileProvider;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
+
+import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -31,18 +42,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import javax.ejb.MessageDriven;
-import javax.ejb.Singleton;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-
-import org.jboss.ejb3.embedded.impl.base.scanner.filter.BundleSymbolicNameExclusionFilter;
-import org.jboss.ejb3.embedded.spi.scanner.filter.ExclusionFilter;
-import org.jboss.logging.Logger;
-import org.jboss.vfs.TempFileProvider;
-import org.jboss.vfs.VFS;
-import org.jboss.vfs.VirtualFile;
 
 /**
  * Implements JVM ClassPath scanning for EJB JARs as defined
@@ -377,6 +376,10 @@ public class ClassPathEjbJarScanner
                log.warnf(
                      "Dev Hack Alert: Ignoring class on ClassPath which can't be loaded due to %s while loading %s; "
                            + "configure an exclusion filter so %s is not processed", ncdfe.toString(), className, root);
+            }
+            catch(final SecurityException e)
+            {
+               log.warnf("Can't load class %s (%s).", className, e.toString());
             }
 
             // Determine if we have a class with an EJB component annotation 

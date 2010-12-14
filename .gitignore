@@ -1,3 +1,7 @@
+/.idea
+*.iml
+# don't ask
+/${JBOSS_HOME}
 .project
 .classpath
 .settings

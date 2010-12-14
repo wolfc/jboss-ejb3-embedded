@@ -119,6 +119,9 @@
 
   <!-- Aggregate Modules -->
   <modules>
+    <!-- impl-standalone has a soft dependency on sub -->
+    <module>sub</module>
+
     <module>api</module>
     <module>api-shrinkwrap</module>
     <module>impl-as</module>
@@ -131,7 +134,18 @@
   <!-- Dependency Management -->
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jboss-ejb3-embedded-impl-base</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jboss-ejb3-embedded-sub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>

@@ -1,55 +1,62 @@
-<!--
-  vi:ts=2:sw=2:expandtab
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <!-- Define Parent -->
-  <parent>
-    <groupId>org.jboss.ejb3.embedded</groupId>
-    <artifactId>jboss-ejb3-embedded-parent</artifactId>
-    <version>1.0.0-alpha-2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
+   <!-- Define Parent -->
+   <parent>
+      <groupId>org.jboss.ejb3.embedded</groupId>
+      <artifactId>jboss-ejb3-embedded-parent</artifactId>
+      <version>1.0.0-alpha-2-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+   </parent>
 
-  <!-- Maven POM Model Version -->
-  <modelVersion>4.0.0</modelVersion>
+   <!-- Maven POM Model Version -->
+   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Artifact Information -->
-  <artifactId>jboss-ejb3-embedded-impl-standalone</artifactId>
-  <packaging>jar</packaging>
-  <name>JBoss EJB 3.1+ Embedded Implementation (Internals) for Standalone Environments</name>
-  <description>Implementation Support for Embedded EJB 3.1+ Container within a generic existing JVM</description>
+   <!-- Artifact Information -->
+   <artifactId>jboss-ejb3-embedded-impl-standalone</artifactId>
+   <packaging>jar</packaging>
+   <name>JBoss EJB 3.1+ Embedded Implementation (Internals) for Standalone Environments</name>
+   <description>Implementation Support for Embedded EJB 3.1+ Container within a generic existing JVM</description>
 
-  <!-- Build Configuration -->
-  <build>
-  
-  </build>
-  
-  <properties>
+   <!-- Build Configuration -->
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.6</version>
+            <configuration>
+               <!-- Normally sub is distributed within AS, so this extra embedded.class.path is not needed -->
+               <argLine>-Dembedded.class.path=${basedir}/../sub/target/classes -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Djava.endorsed.dirs=${JBOSS_HOME}/lib/endorsed -Djboss.home=${JBOSS_HOME} -Djboss.boot.server.log.dir=${JBOSS_HOME} -Dorg.jboss.reflect.spi.TypeInfoFactory=org.jboss.reflect.plugins.introspection.IntrospectionTypeInfoFactory</argLine>               
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>integration-test</goal>
+                     <goal>verify</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
 
-  <!-- Versioning -->
-  
-  </properties>
+   <dependencies>
+      <!-- jboss-ejb3-nointerface directly depends on javassist -->
+      <dependency>
+         <groupId>javassist</groupId>
+         <artifactId>javassist</artifactId>
+         <version>3.12.1.GA</version>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.jboss.spec.javax.ejb</groupId>
+         <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+      </dependency>
 
-  <dependencies>
-    
-    <dependency>
-      <groupId>${groupId}</groupId>
-      <artifactId>jboss-ejb3-embedded-impl-base</artifactId>
-      <version>${version}</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.jboss.reloaded</groupId>
-      <artifactId>jboss-reloaded-vdf-bootstrap-minimal</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    
-  </dependencies>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+      </dependency>
+   </dependencies>
 </project>

@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+   <!-- Define Parent -->
+   <parent>
+      <groupId>org.jboss.ejb3.embedded</groupId>
+      <artifactId>jboss-ejb3-embedded-parent</artifactId>
+      <version>1.0.0-alpha-2-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+   </parent>
+
+   <!-- Maven POM Model Version -->
+   <modelVersion>4.0.0</modelVersion>
+
+   <!-- Artifact Information -->
+   <artifactId>jboss-ejb3-embedded-sub</artifactId>
+   <packaging>jar</packaging>
+   <name>JBoss EJB 3.1+ Embedded Submersible</name>
+
+   <description>Embedded container that is designed to run in an isolated class loader.</description>
+
+   <dependencies>
+      <dependency>
+         <groupId>${groupId}</groupId>
+         <artifactId>jboss-ejb3-embedded-impl-base</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>org.jboss.reloaded</groupId>
+               <artifactId>jboss-reloaded-vdf-bootstrap-minimal</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.embedded</groupId>
+         <artifactId>jboss-embedded-api</artifactId>
+         <version>1.0.0-alpha-3</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss.spec.javax.ejb</groupId>
+         <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+      </dependency>
+   </dependencies>
+</project>
