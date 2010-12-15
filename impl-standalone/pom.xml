@@ -23,6 +23,17 @@
    <build>
       <plugins>
          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <configuration>
+               <rules>
+                  <requireProperty>
+                     <property>env.JBOSS_HOME</property>
+                     <message>JBOSS_HOME needs to be set for testing</message>
+                  </requireProperty>
+               </rules>
+            </configuration>
+         </plugin>
+         <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>2.6</version>
             <configuration>
