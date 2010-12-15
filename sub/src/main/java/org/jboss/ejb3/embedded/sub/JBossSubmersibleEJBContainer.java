@@ -21,6 +21,7 @@
  */
 package org.jboss.ejb3.embedded.sub;
 
+import org.jboss.bootstrap.api.as.config.JBossASServerConfig;
 import org.jboss.ejb3.embedded.impl.base.scanner.ClassPathEjbJarScanner;
 import org.jboss.embedded.api.server.JBossASEmbeddedServer;
 import org.jboss.embedded.api.server.JBossASEmbeddedServerFactory;
@@ -31,7 +32,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -79,13 +79,17 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
 
       // ClassPathEjbJarScanner uses TCCL, so we can not modify it yet
       String modules[] = ClassPathEjbJarScanner.getEjbJars();
-      System.err.println("modules = " + Arrays.toString(modules));
+      //System.err.println("modules = " + Arrays.toString(modules));
 
+      String bindAddress = System.getProperty("embedded.bind.address", "localhost");
+      
       Thread.currentThread().setContextClassLoader(loader);
 
       JBossASEmbeddedServer server = JBossASEmbeddedServerFactory.createServer(loader);
-      server.getConfiguration().jbossHome(jbossHome);
-      server.getConfiguration().serverName(serverName);
+      JBossASServerConfig config = server.getConfiguration();
+      config.jbossHome(jbossHome);
+      config.serverName(serverName);
+      config.bindAddress(bindAddress);
       try
       {
          server.start();

@@ -66,8 +66,7 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
       if(jbossHome == null)
          throw new EJBException("Neither JBOSS_HOME nor jboss.home is set");
 
-      // TODO: make configurable
-      String serverConfig = "default";
+      String serverConfig = System.getProperty("embedded.server.name", "default");
 
       List<URL> cp = new ArrayList<URL>();
 
