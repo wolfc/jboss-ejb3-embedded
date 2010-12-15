@@ -119,16 +119,16 @@
 
   <!-- Aggregate Modules -->
   <modules>
-    <!-- impl-standalone has a soft dependency on sub -->
+    <!-- standalone has a soft dependency on sub -->
     <module>sub</module>
 
     <module>api</module>
     <module>api-shrinkwrap</module>
     <module>impl-as</module>
     <module>impl-base</module>
-    <module>impl-standalone</module>
     <module>impl-shrinkwrap</module>
     <module>spi</module>
+    <module>standalone</module>
   </modules>
 
   <!-- Dependency Management -->

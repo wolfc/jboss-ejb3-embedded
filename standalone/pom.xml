@@ -14,9 +14,9 @@
    <modelVersion>4.0.0</modelVersion>
 
    <!-- Artifact Information -->
-   <artifactId>jboss-ejb3-embedded-impl-standalone</artifactId>
+   <artifactId>jboss-ejb3-embedded-standalone</artifactId>
    <packaging>jar</packaging>
-   <name>JBoss EJB 3.1+ Embedded Implementation (Internals) for Standalone Environments</name>
+   <name>JBoss EJB 3.1+ Embedded for Standalone Environments</name>
    <description>Implementation Support for Embedded EJB 3.1+ Container within a generic existing JVM</description>
 
    <!-- Build Configuration -->
