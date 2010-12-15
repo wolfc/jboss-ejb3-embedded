@@ -17,7 +17,7 @@
     <!-- Artifact Information  -->
   <groupId>org.jboss.ejb3.embedded</groupId>
   <artifactId>jboss-ejb3-embedded-parent</artifactId>
-  <version>1.0.0-alpha-2</version>
+  <version>1.0.0-alpha-3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JBoss EJB 3.1+ Embedded Aggregator</name>
   <url>http://www.jboss.org</url>
