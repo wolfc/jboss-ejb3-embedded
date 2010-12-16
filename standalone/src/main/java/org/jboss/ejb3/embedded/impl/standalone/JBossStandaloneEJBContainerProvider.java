@@ -40,6 +40,8 @@ import java.util.Map;
  */
 public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
 {
+   private static String EJBCONTAINER_CLASS_NAME = "org.jboss.ejb3.embedded.sub.JBossSubmersibleEJBContainer";
+   
    private static void addClassPath(List<URL> cp, String dirname)
    {
       try
@@ -60,6 +62,16 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
    @Override
    public EJBContainer createEJBContainer(Map<?, ?> properties) throws EJBException
    {
+      if(properties != null)
+      {
+         String provider = (String) properties.get(EJBContainer.PROVIDER);
+         if(provider != null)
+         {
+            if(!provider.equals(JBossStandaloneEJBContainerProvider.class.getName()) && !provider.equals(EJBCONTAINER_CLASS_NAME))
+               return null;
+         }
+      }
+
       String jbossHome = System.getenv("JBOSS_HOME");
       if(jbossHome == null)
          jbossHome = System.getProperty("jboss.home");
@@ -117,7 +129,7 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
 
          Thread.currentThread().setContextClassLoader(loader);
 
-         Class<?> cls = loader.loadClass("org.jboss.ejb3.embedded.sub.JBossSubmersibleEJBContainer");
+         Class<?> cls = loader.loadClass(EJBCONTAINER_CLASS_NAME);
          Method createMethod = cls.getMethod("createEJBContainer", Map.class, URLClassLoader.class, String.class, String.class);
          return (EJBContainer) createMethod.invoke(null, properties, loader, jbossHome, serverConfig);
       }
