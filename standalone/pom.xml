@@ -72,8 +72,10 @@
       </dependency>
       
       <dependency>
-         <groupId>org.jboss.spec.javax.ejb</groupId>
-         <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+         <groupId>org.jboss.spec</groupId>
+         <artifactId>jboss-javaee-6.0</artifactId>
+         <version>1.0.0.CR1</version>
+         <type>pom</type>
       </dependency>
 
       <dependency>
