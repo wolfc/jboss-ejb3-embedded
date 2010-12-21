@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.jboss.ejb3.embedded</groupId>
       <artifactId>jboss-ejb3-embedded-parent</artifactId>
-      <version>1.0.0-alpha-4</version>
+      <version>1.0.0-alpha-5-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
