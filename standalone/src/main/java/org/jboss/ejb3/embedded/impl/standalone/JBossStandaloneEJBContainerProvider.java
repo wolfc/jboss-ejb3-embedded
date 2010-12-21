@@ -62,6 +62,11 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
    @Override
    public EJBContainer createEJBContainer(Map<?, ?> properties) throws EJBException
    {
+      // EJB 3.1 FR 22.2.1
+      // Enterprise beans running within the embeddable container are loaded using the context class loader
+      // active on te thread at the time that createEJBContainer is called.
+      ClassLoader beanLoader = Thread.currentThread().getContextClassLoader();
+
       if(properties != null)
       {
          String provider = (String) properties.get(EJBContainer.PROVIDER);
@@ -98,6 +103,7 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
          throw new EJBException(e);
       }
 
+      // for testing and hacking purposes you can define embedded.class.path
       String embeddedClassPath = System.getProperty("embedded.class.path");
       if(embeddedClassPath != null)
       {
@@ -115,7 +121,8 @@ public class JBossStandaloneEJBContainerProvider implements EJBContainerProvider
          }
       }
 
-      URLClassLoader loader = new URLClassLoader(cp.toArray(new URL[0]), ClassLoader.getSystemClassLoader());
+      // add everything to the user supplied class loader
+      URLClassLoader loader = new URLClassLoader(cp.toArray(new URL[0]), beanLoader);
 
       // TODO: if properties are not set do some sensible default
       //System.setProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager");

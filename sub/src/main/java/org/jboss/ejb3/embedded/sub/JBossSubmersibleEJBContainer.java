@@ -32,6 +32,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.io.File;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -77,9 +78,40 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
    {
       System.setProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager");
 
-      // ClassPathEjbJarScanner uses TCCL, so we can not modify it yet
-      String modules[] = ClassPathEjbJarScanner.getEjbJars();
-      //System.err.println("modules = " + Arrays.toString(modules));
+      File deployments[];
+      
+      Object modules = property(properties, EJBContainer.MODULES);
+      if(modules != null)
+      {
+         Class<?> componentType = modules.getClass().getComponentType();
+         if(componentType == null)
+         {
+            deployments = new File[1];
+            if(modules instanceof String)
+               throw new EJBException("EJBTHREE-2221: using String for " + EJBContainer.MODULES + " is NYI");
+            else if(modules instanceof File)
+               deployments[0] = (File) modules;
+            else
+               throw new EJBException("EJB 3.1 FR 22.2.2.2: Illegal type " + modules.getClass() + " for " + EJBContainer.MODULES);
+         }
+         else
+         {
+            if(componentType.equals(String.class))
+               throw new EJBException("EJBTHREE-2221: using String[] for " + EJBContainer.MODULES + " is NYI");
+            else if(componentType.equals(File.class))
+               deployments = (File[]) modules;
+            else
+               throw new EJBException("EJB 3.1 FR 22.2.2.2: Illegal component type " + componentType + " for " + EJBContainer.MODULES);
+         }
+      }
+      else
+      {
+         // ClassPathEjbJarScanner uses TCCL, so we can not modify it yet
+         String candidates[] = ClassPathEjbJarScanner.getEjbJars();
+         deployments = new File[candidates.length];
+         for(int i = 0; i < candidates.length; i++)
+            deployments[i] = new File(candidates[i]);
+      }
 
       String bindAddress = System.getProperty("embedded.bind.address", "localhost");
       
@@ -96,8 +128,8 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
 
          InitialContext context = new InitialContext();
 
-         for(String m : modules)
-            server.deploy(new File(m));
+         System.err.println("deployments = " + Arrays.toString(deployments));
+         server.deploy(deployments);
 
          return new JBossSubmersibleEJBContainer(server, context);
       }
@@ -111,5 +143,12 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
    public Context getContext()
    {
       return context;
+   }
+
+   private static Object property(Map<?, ?> properties, String key)
+   {
+      if(properties == null)
+         return null;
+      return properties.get(key);
    }
 }
