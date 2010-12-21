@@ -31,11 +31,18 @@ import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URLClassLoader;
 import java.util.Map;
 
 /**
+ * An EJBContainer implementation that expects to be living within the same class loader
+ * as JBossEmbeddedAS can be booted from.
+ * 
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
  */
 public class JBossSubmersibleEJBContainer extends EJBContainer
@@ -134,13 +141,17 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
             server.deploy(deployments);
          else
          {
-            /*
+            // Create a virtual EAR with the correct name and add the given modules.
+            /* If only...
             EnterpriseArchive archive = ShrinkWrap.create(EnterpriseArchive.class, appName);
             for(File d : deployments)
                archive.addModule(d);
             server.deploy(archive);
             */
             VirtualFileAssembly assembly = new VirtualFileAssembly(appName + ".ear");
+            // make sure we don't have class loader isolation (else CCE in the user class)
+            assembly.addDirectory("META-INF"); // make sure this is visible as a child
+            assembly.add("META-INF/jboss-classloading.xml", createJBossClassLoadingXML());
             for(File d : deployments)
             {
                // if it's already a file it must not be mounted twice (see AbstractVFSArchiveStructureDeployer#determineStructure)
@@ -155,6 +166,7 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
                   assembly.add(name, d);
                }
             }
+            // Deploy the virtual EAR.
             server.deploy(assembly.getMountRoot().toURL());
          }
 
@@ -163,6 +175,37 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
       catch(Exception e)
       {
          throw new EJBException(e);
+      }
+   }
+
+   private static File createJBossClassLoadingXML()
+   {
+      // create a big-pile-o-mud ((C) 2009 by Adrian Brock)
+      // http://java.dzone.com/articles/jboss-microcontainer-classloading
+      try
+      {
+         File file = File.createTempFile("jboss-classloading", ".xml");
+         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(file)));
+         try
+         {
+            out.println("<classloading xmlns=\"urn:jboss:classloading:1.0\"");
+            out.println("        domain=\"DefaultDomain\"");
+            out.println("        export-all=\"NON_EMPTY\"");
+            out.println("        import-all=\"true\"");
+            out.println("        top-level-classloader=\"true\"");
+            out.println("        >");
+            out.println("</classloading>");
+            out.flush();
+         }
+         finally
+         {
+            out.close();
+         }
+         return file;
+      }
+      catch(IOException e)
+      {
+         throw new RuntimeException("Failed to create jboss-classloading.xml", e);
       }
    }
 

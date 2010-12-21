@@ -27,17 +27,45 @@ import org.jboss.vfs.util.automount.Automounter;
 import org.jboss.vfs.util.automount.MountOption;
 import org.junit.Test;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * This is mostly an collection of hacks to see how VFS3 reacts.
+ * 
  * @author <a href="mailto:cdewolf@redhat.com">Carlo de Wolf</a>
  */
 public class VirtualFileAssemblyTestCase
 {
+   private static File createDummyXML()
+   {
+      try
+      {
+         File file = File.createTempFile("dummy", ".xml");
+         PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(file)));
+         try
+         {
+            out.println("<dummy/>");
+            out.flush();
+         }
+         finally
+         {
+            out.close();
+         }
+         return file;
+      }
+      catch(IOException e)
+      {
+         throw new RuntimeException("Failed to create dummy.xml", e);
+      }
+   }
+
    /**
     * The EARContentsDeployer will look for the existence of "".
     */
@@ -53,5 +81,20 @@ public class VirtualFileAssemblyTestCase
 
       // if a file, it'll be opened as if it is a zip (=> POOF)
       assertFalse(ear.isFile());
+   }
+
+   @Test
+   public void testMetaInf() throws IOException
+   {
+      String appName = "test-meta-inf";
+
+      VirtualFileAssembly assembly = new VirtualFileAssembly(appName);
+      assembly.addDirectory("META-INF"); // make sure this is visible as a child
+      assembly.add("META-INF/dummy.xml", createDummyXML());
+
+      VirtualFile ear = assembly.getMountRoot().getChild("");
+      assertTrue(ear.exists());
+
+      assertTrue(ear.getChild("META-INF").exists());
    }
 }

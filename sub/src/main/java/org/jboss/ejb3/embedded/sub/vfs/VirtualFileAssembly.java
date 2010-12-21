@@ -105,6 +105,17 @@ public class VirtualFileAssembly implements Closeable {
       add(path, mountPoint);
    }
 
+   public void addDirectory(final String path) throws IOException
+   {
+      File temp = File.createTempFile(path, null);
+      if(!temp.delete())
+         throw new IOException("Unable to delete temp file " + temp);
+      if(!temp.mkdir())
+         throw new IOException("Unable to create directory " + temp);
+      temp.deleteOnExit();
+      add(path, temp);
+   }
+
    public void addZip(final String path, final File zipFile) throws IOException {
       VirtualFile mountPoint = mountRoot.getChild(path);
       Closeable handle = VFS.mountZip(zipFile, mountPoint, getTempFileProvider());
