@@ -31,14 +31,39 @@
       </dependency>
 
       <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+      </dependency>
+      
+      <dependency>
          <groupId>org.jboss.embedded</groupId>
          <artifactId>jboss-embedded-api</artifactId>
          <version>1.0.0-alpha-3</version>
       </dependency>
 
       <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging-spi</artifactId>
+         <scope>test</scope>
+      </dependency>
+      
+      <!--
+      <dependency>
+         <groupId>org.jboss.shrinkwrap</groupId>
+         <artifactId>shrinkwrap-api</artifactId>
+         <version>1.0.0-alpha-11</version>
+      </dependency>
+      -->
+
+      <dependency>
          <groupId>org.jboss.spec.javax.ejb</groupId>
          <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.jboss</groupId>
+         <artifactId>jboss-vfs</artifactId>
+         <version>3.0.0.CR5</version>
       </dependency>
    </dependencies>
 </project>

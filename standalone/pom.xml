@@ -36,7 +36,7 @@
             <version>2.6</version>
             <configuration>
                <!-- Normally sub is distributed within AS, so this extra embedded.class.path is not needed -->
-               <argLine>-Dembedded.class.path=${basedir}/../sub/target/classes -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Djava.endorsed.dirs=${JBOSS_HOME}/lib/endorsed -Djboss.home=${JBOSS_HOME} -Djboss.boot.server.log.dir=${JBOSS_HOME} -Dorg.jboss.reflect.spi.TypeInfoFactory=org.jboss.reflect.plugins.introspection.IntrospectionTypeInfoFactory</argLine>               
+               <argLine>-Dembedded.class.path=${basedir}/../sub/target/classes -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Djava.endorsed.dirs=${JBOSS_HOME}/lib/endorsed -Djboss.home=${JBOSS_HOME} -Djboss.boot.server.log.dir=${JBOSS_HOME} -Dorg.jboss.reflect.spi.TypeInfoFactory=org.jboss.reflect.plugins.introspection.IntrospectionTypeInfoFactory -Dembedded.bind.address=127.0.0.3</argLine>
             </configuration>
             <executions>
                <execution>

@@ -23,6 +23,7 @@ package org.jboss.ejb3.embedded.sub;
 
 import org.jboss.bootstrap.api.as.config.JBossASServerConfig;
 import org.jboss.ejb3.embedded.impl.base.scanner.ClassPathEjbJarScanner;
+import org.jboss.ejb3.embedded.sub.vfs.VirtualFileAssembly;
 import org.jboss.embedded.api.server.JBossASEmbeddedServer;
 import org.jboss.embedded.api.server.JBossASEmbeddedServerFactory;
 
@@ -32,7 +33,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -113,6 +113,8 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
             deployments[i] = new File(candidates[i]);
       }
 
+      String appName = property(properties, EJBContainer.APP_NAME, String.class);
+
       String bindAddress = System.getProperty("embedded.bind.address", "localhost");
       
       Thread.currentThread().setContextClassLoader(loader);
@@ -128,8 +130,33 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
 
          InitialContext context = new InitialContext();
 
-         System.err.println("deployments = " + Arrays.toString(deployments));
-         server.deploy(deployments);
+         if(appName == null)
+            server.deploy(deployments);
+         else
+         {
+            /*
+            EnterpriseArchive archive = ShrinkWrap.create(EnterpriseArchive.class, appName);
+            for(File d : deployments)
+               archive.addModule(d);
+            server.deploy(archive);
+            */
+            VirtualFileAssembly assembly = new VirtualFileAssembly(appName + ".ear");
+            for(File d : deployments)
+            {
+               // if it's already a file it must not be mounted twice (see AbstractVFSArchiveStructureDeployer#determineStructure)
+               if(d.isFile())
+                  assembly.addZip(d.getName(), d);
+               else
+               {
+                  // a whimsical hack to make sure the directory is marked as an expanded archive
+                  String name = d.getName();
+                  if(!name.endsWith(".jar"))
+                     name = name + ".jar";
+                  assembly.add(name, d);
+               }
+            }
+            server.deploy(assembly.getMountRoot().toURL());
+         }
 
          return new JBossSubmersibleEJBContainer(server, context);
       }
@@ -150,5 +177,13 @@ public class JBossSubmersibleEJBContainer extends EJBContainer
       if(properties == null)
          return null;
       return properties.get(key);
+   }
+
+   private static <T> T property(Map<?, ?> properties, String key, Class<T> expectedType)
+   {
+      if(properties == null)
+         return null;
+      // TODO: check expected type
+      return expectedType.cast(properties.get(key));
    }
 }
