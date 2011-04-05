@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static org.jboss.ejb3.embedded.impl.base.scanner.SecurityActions.getSystemProperty;
+
 /**
  * Implements JVM ClassPath scanning for EJB JARs as defined
  * by EJB 3.1 Final Draft 22.2.1.  This is a static utility 
@@ -158,7 +160,9 @@ public class ClassPathEjbJarScanner
       final Collection<String> returnValue = new ArrayList<String>();
 
       // Get the full ClassPath
-      final String classPath = SecurityActions.getSystemProperty(SYS_PROP_KEY_CLASS_PATH);
+      String classPath = getSystemProperty("surefire.test.class.path");
+      if (classPath == null || classPath.isEmpty())
+         classPath = SecurityActions.getSystemProperty(SYS_PROP_KEY_CLASS_PATH);
       if (log.isTraceEnabled())
       {
          log.tracef("Class Path: %s", classPath);
